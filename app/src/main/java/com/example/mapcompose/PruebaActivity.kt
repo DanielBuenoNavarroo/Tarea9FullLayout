@@ -105,6 +105,7 @@ fun ImageTextComponent(imageResource: Int, text: String) {
     Column(
         modifier = Modifier
             .padding(8.dp)
+            .background(Color.DarkGray)
             .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
