@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,21 +42,16 @@ fun CustomLayout() {
             .background(Color.White)
             .padding(16.dp)
     ) {
+        Componentes.ParteArriba()
         Componentes.TitleTextComponent(text = "Good ${obtenerMomentoDelDia()}!")
+        Componentes.MarginVertical(margin = 32)
         Componentes.TopDiv()
-        ParaTi()
+        Componentes.ParaTi()
         Componentes.BottomDiv()
     }
 }
 
-@Composable
-fun ParaTi(){
-    Column {
-        Componentes.MarginHorizontal(margin = 32)
-        Text(text = "Just for you")
-        Componentes.MarginHorizontal(margin = 8)
-    }
-}
+
 
 fun obtenerMomentoDelDia(): String {
     val actualTime = Calendar.getInstance()
