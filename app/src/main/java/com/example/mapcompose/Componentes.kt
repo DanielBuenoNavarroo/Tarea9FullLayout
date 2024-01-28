@@ -1,7 +1,12 @@
 package com.example.mapcompose
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,19 +29,58 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mapcompose.ui.theme.Circulo
 
 class Componentes {
     companion object {
+
+        @Composable
+        fun ParteArriba() {
+            // Crear el launcher para el resultado de la actividad
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+            }
+
+            Column(
+                modifier = Modifier
+                    .height(50.dp)
+                    .fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.google_assistant_logo),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clickable {
+                                try {
+                                    val intent = Intent(Intent.ACTION_VOICE_COMMAND)
+                                    launcher.launch(intent)
+                                } catch (e: ActivityNotFoundException) {
+                                    e.printStackTrace()
+                                }
+                            }
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.google_assistant_logo),
+                        contentDescription = null,
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+            }
+        }
+
         @Composable
         fun TitleTextComponent(text: String) {
             Column {
                 Text(
                     text = text,
-                    modifier = Modifier.padding(bottom = 16.dp),
                     fontSize = 32.sp
                 )
             }
@@ -79,24 +123,24 @@ class Componentes {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(125.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 item {
                     TopComponent(
                         imageResource = R.drawable.baseline_location_on_16,
                         text = "Navigate"
                     )
-                    MarginVertical(margin = 8)
+                    MarginHorizontal(margin = 8)
                     TopComponent(
                         imageResource = R.drawable.baseline_call_16,
                         text = "Make a call"
                     )
-                    MarginVertical(margin = 8)
+                    MarginHorizontal(margin = 8)
                     TopComponent(
                         imageResource = R.drawable.baseline_access_alarms_16,
                         text = "Add alarm"
                     )
-                    MarginVertical(margin = 8)
+                    MarginHorizontal(margin = 8)
                     TopComponent(
                         imageResource = R.drawable.baseline_add_circle_outline_16,
                         text = "Otro"
@@ -106,10 +150,37 @@ class Componentes {
         }
 
         @Composable
+        fun ParaTi() {
+            Column {
+                MarginVertical(margin = 32)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(35.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .background(Circulo)
+                            .padding(8.dp)
+                    )
+                    MarginHorizontal(margin = 8)
+                    Text(text = "Just for you")
+                }
+                MarginVertical(margin = 8)
+            }
+        }
+
+        @Composable
         fun BottomComponent(imageResource: Int, text: String) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().height(90.dp)
                     .clip(MaterialTheme.shapes.large)
                     .shadow(1.dp)
                     .padding(16.dp)
@@ -142,21 +213,22 @@ class Componentes {
         fun BottomDiv() {
             LazyColumn {
                 item {
+                    MarginVertical(margin = 8)
                     BottomComponent(
                         imageResource = R.drawable.ic_launcher_foreground,
                         text = "Componente"
                     )
-                    MarginHorizontal(margin = 16)
+                    MarginVertical(margin = 16)
                     BottomComponent(
                         imageResource = R.drawable.ic_launcher_foreground,
                         text = "Componente"
                     )
-                    MarginHorizontal(margin = 16)
+                    MarginVertical(margin = 16)
                     BottomComponent(
                         imageResource = R.drawable.ic_launcher_foreground,
                         text = "Componente"
                     )
-                    MarginHorizontal(margin = 16)
+                    MarginVertical(margin = 16)
                     BottomComponent(
                         imageResource = R.drawable.ic_launcher_foreground,
                         text = "Componente"
@@ -166,12 +238,12 @@ class Componentes {
         }
 
         @Composable
-        fun MarginHorizontal(margin: Int) {
+        fun MarginVertical(margin: Int) {
             Spacer(modifier = Modifier.height(margin.dp))
         }
 
         @Composable
-        fun MarginVertical(margin: Int) {
+        fun MarginHorizontal(margin: Int) {
             Spacer(modifier = Modifier.width(margin.dp))
         }
     }
