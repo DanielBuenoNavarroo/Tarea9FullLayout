@@ -2,6 +2,7 @@ package com.example.mapcompose
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +45,8 @@ class Componentes {
                 contract = ActivityResultContracts.StartActivityForResult()
             ) { result ->
             }
+
+            val toastContext = LocalContext.current.applicationContext
 
             Column(
                 modifier = Modifier
@@ -60,9 +64,13 @@ class Componentes {
                             .size(50.dp)
                             .clickable {
                                 try {
-                                    val intent = Intent(Intent.ACTION_VOICE_COMMAND)
+
+                                    val intent = Intent(Intent.ACTION_ASSIST)
                                     launcher.launch(intent)
                                 } catch (e: ActivityNotFoundException) {
+                                    Toast
+                                        .makeText(toastContext, "No tienes intalado google assistant", Toast.LENGTH_SHORT)
+                                        .show()
                                     e.printStackTrace()
                                 }
                             }
@@ -180,7 +188,8 @@ class Componentes {
         fun BottomComponent(imageResource: Int, text: String) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth().height(90.dp)
+                    .fillMaxWidth()
+                    .height(90.dp)
                     .clip(MaterialTheme.shapes.large)
                     .shadow(1.dp)
                     .padding(16.dp)
