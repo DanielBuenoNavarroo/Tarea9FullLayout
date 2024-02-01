@@ -363,12 +363,9 @@ class Componentes {
             val password: String by viewModel.password.observeAsState(initial = "")
             // Solo se activará el botón cuando email y password cumplan nuestras reglas
             val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
-            val registerEnable: Boolean by viewModel.registerEnable.observeAsState(initial = false)
 
             val context = LocalContext.current
             var auth: FirebaseAuth = Firebase.auth
-            val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-            val usuariosRef: DatabaseReference = database.getReference("usuarios")
 
             Column(modifier = modifier) {
                 HeaderImage(Modifier.align(Alignment.CenterHorizontally))
@@ -389,19 +386,11 @@ class Componentes {
                                 val logueado = Intent(context, PruebaActivity::class.java)
                                 context.startActivity(logueado)
                             } else {
-                                Toast.makeText(
-                                    context,
-                                    "Error en la autentificación",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Toast.makeText(context, "Error en la autentificación", Toast.LENGTH_LONG).show()
                             }
                         }
                     } catch (ex: Exception) {
-                        Toast.makeText(
-                            context,
-                            "Error: ${ex.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(context, "Error: ${ex.message}", Toast.LENGTH_LONG).show()
                     }
                 }
 //                MarginVertical(margin = 16)
@@ -481,9 +470,12 @@ class Componentes {
 
         @Composable
         fun ForgotPassword(modifier: Modifier) {
+            val context = LocalContext.current
             Text(
                 text = "Olvidaste la contraseña?",
-                modifier = Modifier.clickable { },
+                modifier = Modifier.clickable {
+                    Toast.makeText(context, "Mala Suerte, esta es una aplicación horrible", Toast.LENGTH_LONG).show()
+                },
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF018786)
@@ -492,11 +484,9 @@ class Componentes {
 
         @Composable
         fun PasswordField(password: String, onTextFieldChanged: (String) -> Unit) {
-
             var passwordVisibility = remember {
                 mutableStateOf(false)
             }
-
             TextField(
                 value = password,
                 onValueChange = { onTextFieldChanged(it) },
