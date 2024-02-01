@@ -44,6 +44,7 @@ class Componentes {
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) { result ->
+
             }
 
             val toastContext = LocalContext.current.applicationContext
