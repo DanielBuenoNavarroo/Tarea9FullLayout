@@ -30,8 +30,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,11 +50,23 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
 import com.example.mapcompose.ui.theme.Circulo
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+
 
 class Componentes {
     companion object {
@@ -320,5 +343,230 @@ class Componentes {
         fun MarginHorizontal(margin: Int) {
             Spacer(modifier = Modifier.width(margin.dp))
         }
+
+        @Composable
+        fun LoginScreen(viewModel: LoginViewModel) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Log(Modifier.align(Alignment.Center), viewModel)
+            }
+        }
+
+        private @Composable
+        fun Log(modifier: Modifier, viewModel: LoginViewModel) {
+
+            // Conectamos nuestro mail con el de LoginViewModel
+            val email: String by viewModel.email.observeAsState(initial = "")
+            val password: String by viewModel.password.observeAsState(initial = "")
+            // Solo se activará el botón cuando email y password cumplan nuestras reglas
+            val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
+            val registerEnable: Boolean by viewModel.registerEnable.observeAsState(initial = false)
+
+            val context = LocalContext.current
+            var auth: FirebaseAuth = Firebase.auth
+            val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+            val usuariosRef: DatabaseReference = database.getReference("usuarios")
+
+            Column(modifier = modifier) {
+                HeaderImage(Modifier.align(Alignment.CenterHorizontally))
+                MarginVertical(margin = 64)
+                EmailField(email, { viewModel.onLoginChanged(it, password) })
+                MarginVertical(margin = 16)
+                PasswordField(password, { viewModel.onLoginChanged(email, it) })
+                MarginVertical(margin = 8)
+                ForgotPassword(Modifier.align(Alignment.End))
+                MarginVertical(margin = 64)
+                LoginButton(loginEnable) {
+                    try {
+                        auth.signInWithEmailAndPassword(
+                            email,
+                            password
+                        ).addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                val logueado = Intent(context, PruebaActivity::class.java)
+                                context.startActivity(logueado)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Error en la autentificación",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        Toast.makeText(
+                            context,
+                            "Error: ${ex.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+//                MarginVertical(margin = 16)
+//                RegisterButton(loginEnable) {
+//                    auth.createUserWithEmailAndPassword(
+//                        email,
+//                        password
+//                    ).addOnCompleteListener {
+//                        if (it.isSuccessful) {
+//                            //Log.d(TAG, "Creado nuevo usuario")
+//                            //El email será nuestra id
+//                            // Añadimos datos al usuario creado
+//                            val usuarioActual: FirebaseUser? = auth.currentUser
+//                            if (usuarioActual != null) {
+//                                // insertamos los datos del usuario actual en nuestra Base de Datos
+//                                val user = Usuario(email)
+//                                usuariosRef.child(usuarioActual.uid).setValue(user)
+//                            }
+//                            Toast.makeText(
+//                                context,
+//                                "Usuario creado",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+//                        } else {
+//                            Toast.makeText(
+//                                context,
+//                                "Error en la creación de usuario",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+//                        }
+//
+//                    }
+//                }
+
+            }
+
+        }
+
+//        @Composable
+//        fun RegisterButton(registerEnable: Boolean, onRegisterSelected: () -> Unit) {
+//            Button(
+//                onClick = { onRegisterSelected }, modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(48.dp),
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = Color(0xFF1967D2),
+//                    disabledContainerColor = Color(0xFFE5EAF0),
+//                    contentColor = Color(0xFFFFFFFF),
+//                    disabledContentColor = Color(0xFF000000)
+//                ),
+//                enabled = registerEnable
+//            )
+//            {
+//                Text(text = "Register")
+//            }
+//        }
+
+        // Pasar Parámetros SSOT (Single Source Of Truth)
+        @Composable
+        fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
+            Button(
+                onClick = { onLoginSelected() }, modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1B3A57),
+                    disabledContainerColor = Color(0xFFE5EAF0),
+                    contentColor = Color(0xFFFFFFFF),
+                    disabledContentColor = Color(0xFF000000)
+                ),
+                enabled = loginEnable
+            )
+            {
+                Text(text = "Login")
+            }
+        }
+
+        @Composable
+        fun ForgotPassword(modifier: Modifier) {
+            Text(
+                text = "Olvidaste la contraseña?",
+                modifier = Modifier.clickable { },
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF018786)
+            )
+        }
+
+        @Composable
+        fun PasswordField(password: String, onTextFieldChanged: (String) -> Unit) {
+
+            var passwordVisibility = remember {
+                mutableStateOf(false)
+            }
+
+            TextField(
+                value = password,
+                onValueChange = { onTextFieldChanged(it) },
+                Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFE5EAF0)),
+                //Hint
+                placeholder = {
+                    Text(
+                        text = "Password",
+                        color = Color(0xFFBB86FC)
+                    )
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                singleLine = true,
+                maxLines = 1,
+                textStyle = LocalTextStyle.current.copy(color = Color(0xFF1B3A57)),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            passwordVisibility.value = !passwordVisibility.value
+                        }) {
+                        Icon(
+                            imageVector = if (passwordVisibility.value) {
+                                Icons.Default.Lock
+                            } else {
+                                Icons.Default.Lock
+                            },
+                            contentDescription = ""
+                        )
+                    }
+                },
+                visualTransformation = if (passwordVisibility.value) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                }
+            )
+        }
+
+        @Composable
+        fun EmailField(email: String, onTextFieldChanged: (String) -> Unit) {
+            TextField(
+                value = email,
+                onValueChange = { onTextFieldChanged(it) },
+                Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFE5EAF0)),
+                placeholder = {
+                    Text(
+                        text = "Email",
+                        color = Color(0xFFBB86FC)
+                    )
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                singleLine = true,
+                maxLines = 1,
+                textStyle = LocalTextStyle.current.copy(color = Color(0xFF1B3A57))
+            )
+        }
+
+        @Composable
+        fun HeaderImage(modifier: Modifier) {
+            Image(
+                painter = painterResource(id = R.drawable.firebase),
+                contentDescription = "Firebase"
+            )
+        }
+
     }
 }
+
+
