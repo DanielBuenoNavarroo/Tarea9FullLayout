@@ -1,7 +1,13 @@
 package com.example.mapcompose
 
+import android.Manifest
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,10 +15,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,6 +41,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.example.mapcompose.ui.theme.Circulo
 
 class Componentes {
@@ -40,11 +50,10 @@ class Componentes {
 
         @Composable
         fun ParteArriba() {
-            // Crear el launcher para el resultado de la actividad
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
-            ) { result ->
-
+            ) { _ ->
+                // aqui iria una variable que obtenga la búsqueda pero no da tiempo a implementarlo
             }
 
             val toastContext = LocalContext.current.applicationContext
@@ -70,17 +79,34 @@ class Componentes {
                                     launcher.launch(intent)
                                 } catch (e: ActivityNotFoundException) {
                                     Toast
-                                        .makeText(toastContext, "No tienes intalado google assistant", Toast.LENGTH_SHORT)
+                                        .makeText(
+                                            toastContext,
+                                            "No tienes intalado google assistant",
+                                            Toast.LENGTH_SHORT
+                                        )
                                         .show()
                                     e.printStackTrace()
                                 }
                             }
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.google_assistant_logo),
-                        contentDescription = null,
-                        modifier = Modifier.size(50.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .width(150.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.cloudy_svgrepo_com),
+                                contentDescription = null,
+                                modifier = Modifier.size(30.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = "Cloudy 90º")
+                        }
+                    }
                 }
             }
         }
@@ -96,15 +122,14 @@ class Componentes {
         }
 
         @Composable
-        fun TopComponent(imageResource: Int, text: String) {
+        fun TopComponent(imageResource: Int, text: String, onClick: () -> Unit) {
             Column(
                 modifier = Modifier
-                    .width(125.dp)
-                    .clip(MaterialTheme.shapes.large)
-                    .shadow(2.dp)
-                    .padding(16.dp)
+                    .width(120.dp)
+                    .shadow(10.dp, RoundedCornerShape(10.dp))
                     .background(Color.White)
-                    .fillMaxHeight(),
+                    .fillMaxHeight()
+                    .clickable { onClick() },
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -128,6 +153,7 @@ class Componentes {
 
         @Composable
         fun TopDiv() {
+            val context = LocalContext.current.applicationContext
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -135,25 +161,63 @@ class Componentes {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 item {
+                    MarginHorizontal(margin = 8)
                     TopComponent(
                         imageResource = R.drawable.baseline_location_on_16,
-                        text = "Navigate"
+                        text = "Navigate",
+                        onClick = {
+                            Toast.makeText(context, "hola", Toast.LENGTH_SHORT).show()
+                        }
                     )
                     MarginHorizontal(margin = 8)
                     TopComponent(
                         imageResource = R.drawable.baseline_call_16,
-                        text = "Make a call"
+                        text = "Make a call",
+                        onClick = {
+                            Log.i("hola", "clica")
+                            if (ActivityCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.CALL_PHONE
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                Log.i("hola", "no hay permisos")
+                                ActivityCompat.requestPermissions(
+                                    context as Activity,
+                                    arrayOf(Manifest.permission.CALL_PHONE), 101
+                                )
+                            } else {
+                                val telefono = "tel:" + Uri.encode("646136472")
+                                val intent = Intent(Intent.ACTION_CALL, Uri.parse(telefono))
+                                Log.i("hola", "pasa aqui")
+                                try {
+                                    startActivity(context, intent, Bundle.EMPTY)
+                                } catch (e: Exception) {
+                                    Toast.makeText(
+                                        context,
+                                        "No se puede llamar a ese numero",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
                     )
                     MarginHorizontal(margin = 8)
                     TopComponent(
                         imageResource = R.drawable.baseline_access_alarms_16,
-                        text = "Add alarm"
+                        text = "Add alarm",
+                        onClick = {
+                            Toast.makeText(context, "hola", Toast.LENGTH_SHORT).show()
+                        }
                     )
                     MarginHorizontal(margin = 8)
                     TopComponent(
                         imageResource = R.drawable.baseline_add_circle_outline_16,
-                        text = "Otro"
+                        text = "Otro",
+                        onClick = {
+                            Toast.makeText(context, "hola", Toast.LENGTH_SHORT).show()
+                        }
                     )
+                    MarginHorizontal(margin = 8)
                 }
             }
         }
@@ -176,7 +240,6 @@ class Componentes {
                             .size(30.dp)
                             .clip(CircleShape)
                             .background(Circulo)
-                            .padding(8.dp)
                     )
                     MarginHorizontal(margin = 8)
                     Text(text = "Just for you")
@@ -191,10 +254,9 @@ class Componentes {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(90.dp)
-                    .clip(MaterialTheme.shapes.large)
-                    .shadow(1.dp)
+                    .shadow(10.dp, RoundedCornerShape(10.dp))
+                    .background(Color.White)
                     .padding(16.dp)
-                    .background(Color.White),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -213,7 +275,8 @@ class Componentes {
                     Text(
                         text = text,
                         color = Circulo,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 8.dp),
+                        fontSize = 20.sp
                     )
                 }
             }
@@ -225,24 +288,25 @@ class Componentes {
                 item {
                     MarginVertical(margin = 8)
                     BottomComponent(
-                        imageResource = R.drawable.ic_launcher_foreground,
-                        text = "Componente"
+                        imageResource = R.drawable.baseline_location_on_16,
+                        text = "Places history >"
                     )
                     MarginVertical(margin = 16)
                     BottomComponent(
-                        imageResource = R.drawable.ic_launcher_foreground,
-                        text = "Componente"
+                        imageResource = R.drawable.baseline_call_16,
+                        text = "Call history >"
                     )
                     MarginVertical(margin = 16)
                     BottomComponent(
-                        imageResource = R.drawable.ic_launcher_foreground,
-                        text = "Componente"
+                        imageResource = R.drawable.baseline_access_alarms_16,
+                        text = "Alarms >"
                     )
                     MarginVertical(margin = 16)
                     BottomComponent(
-                        imageResource = R.drawable.ic_launcher_foreground,
-                        text = "Componente"
+                        imageResource = R.drawable.baseline_add_circle_outline_16,
+                        text = "Others"
                     )
+                    MarginVertical(margin = 90)
                 }
             }
         }
