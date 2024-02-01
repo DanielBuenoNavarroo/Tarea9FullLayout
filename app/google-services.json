@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "214258175889",
+    "project_id": "task09---full-layout",
+    "storage_bucket": "task09---full-layout.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214258175889:android:56397e729b040430475430",
+        "android_client_info": {
+          "package_name": "com.example.mapcompose"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNL_pw9v3VIzz9TqrwuZCvqwkTAqMTMM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

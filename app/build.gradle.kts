@@ -69,4 +69,13 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    // Analytics
+    implementation("com.google.firebase:firebase-analytics")
+    // BD Realtime
+    implementation("com.google.firebase:firebase-database-ktx")
+    // Autentificación
+    implementation("com.google.firebase:firebase-auth-ktx")
 }
