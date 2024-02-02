@@ -39,6 +39,4 @@ class LoginViewModel : ViewModel(){
     // Comprobación de la validez del email
     private fun isValidEmail(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
-
-
 }
