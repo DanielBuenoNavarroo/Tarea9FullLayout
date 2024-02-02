@@ -21,7 +21,7 @@ fun AppNavigations(){
             AppScreen(navController)
         }
         composable(route = NavigationScreens.SearchScreen.route){
-            SearchScreen()
+            SearchScreen(navController)
         }
     })
 }
